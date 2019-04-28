@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+      
+    <script src="https://unpkg.com/dexie@latest/dist/dexie.js"></script>
       <style>
           .template {
 		        	display: none;
@@ -31,6 +35,9 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#reviews">Movie Reviews</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#weather">Weather</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#about">About</a>
@@ -115,6 +122,26 @@
         <h1>2019 Top Movies</h1>
         <img src="top.jpg" alt="2019 top movies" width="500" height="500">
     </div>
+    <div class="stuff" id="weather">
+      <h1>Current Weather</h1>
+      <div class="search" align="center">
+            
+             <input type="text" id="findWeather" placeholder="Enter City">
+             <button id="weatherSearch">Search</button>
+      </div>
+      <br>
+      <br>
+      <div id="cardDiv"></div>
+      <div class="card temp" style="width: 18rem;">
+		  <div class="card-body">
+			  <h4 class="wCity">Card title</h4>
+			  <h5 class="wCountry">Card subtitle</h5>
+        <h6 class="wCounty">Card subtitle</h6>
+        <h6 class="weatherTemp">Card subtitle</h6>
+        <h6 class="weatherType">Card subtitle</h6>  
+		  </div>
+	</div>
+    </div>
     <div class="stuff" id="about">
         <h1>About</h1>
         <h3 align="center">Info About This Web App</h3>
@@ -149,10 +176,11 @@
             $("#dataSearch").on("click", function() {
                  var value = $("#findItem").val().trim();
                  var movieName = value.replace(/\s+/g, '');
-                 
-                 dataBaseApi = dataBaseApi + movieName.toLowerCase() + apiKey;
-                 console.log(dataBaseApi);
-                 $.get(dataBaseApi, function(dataBase){
+                 var temp = dataBaseApi;
+                 temp = temp + movieName.toLowerCase() + apiKey;
+                 console.log(temp);
+                 $("#cards").empty();
+                 $.get(temp, function(dataBase){
                      $("#cards").append("<h1>Query returned " + dataBase.results.length + " records</h1>");
                      var data = dataBase;
                      console.log(data.results);
@@ -177,6 +205,7 @@
         });
     </script>
    </body>
+   <!-- http://api.apixu.com/v1/current.json?key=f0a402bca6fa443a893234220192704&q=chicago-->
    <!-- .val().toUpperCase(), var temp = myArr.replace(/\s+/g, ''); -->
    <!--https://api.openweathermap.org/data/2.5/weather?q=Chicago,us&appid=70ec5debd36fb15cea81f7e0adb1b18c-->
    <!--https://api.nytimes.com/svc/movies/v2/reviews/search.json?query=godfather&api-key=4Z439pwbTIyV7T6SmCWTvmQc0PvyrArK -->
