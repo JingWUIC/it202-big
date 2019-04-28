@@ -105,15 +105,15 @@
 
 	 <div class="card template" style="width: 18rem;">
 		<div class="card-body">
-			<h4 class="movieName">Card title</h4>
-			<h5 class="criticName">Card subtitle</h5>
-            <h6 class="rated">Card subtitle</h6>
-            <h6 class="headline">Card subtitle</h6>
-            <h6 class="pubDate">Card subtitle</h6>
-            <h6 class="dateCompleted">Card subtitle</h6>
-            <p class="summary">Card subtitle</p>
-			<a href="#" class="card-link">Card link</a>
-			<a href="#" class="card-link">Another link</a>
+			<h4 class="movieName">N/A</h4>
+			<h5 class="criticName">N/A</h5>
+            <h6 class="rated">N/A</h6>
+            <h6 class="cPick">N/A</h6>
+            <h6 class="headline">N/A</h6>
+            <h6 class="pubDate">N/A</h6>
+           
+            <p class="summary">N/A</p>
+			
 		</div>
 	</div>
   </div>
@@ -134,11 +134,11 @@
       <div id="cardDiv"></div>
       <div class="card temp" style="width: 18rem;">
 		  <div class="card-body">
-			  <h4 class="wCity">Card title</h4>
-			  <h5 class="wCountry">Card subtitle</h5>
-        <h6 class="wCounty">Card subtitle</h6>
-        <h6 class="weatherTemp">Card subtitle</h6>
-        <h6 class="weatherType">Card subtitle</h6>  
+			  <h4 class="wCity">N/A</h4>
+			  <h5 class="wCountry">N/A</h5>
+        <h6 class="wCounty">N/A</h6>
+        <h6 class="weatherTemp">N/A</h6>
+        
 		  </div>
 	</div>
     </div>
@@ -158,6 +158,8 @@
         $(document).ready(function() {
            var dataBaseApi = "https://api.nytimes.com/svc/movies/v2/reviews/search.json?query=";
            var apiKey = "&api-key=4Z439pwbTIyV7T6SmCWTvmQc0PvyrArK";
+           var weatherApi = "https://api.apixu.com/v1/current.json?key=f0a402bca6fa443a893234220192704&q=";
+           
            hide();
            $("#home").show();
             
@@ -172,12 +174,52 @@
           
             });
 
-            
+            $("#weatherSearch").on("click", function(){
+                var tempWeatherKey = $("#findWeather").val().trim();
+                var tempApi = weatherApi  + tempWeatherKey.toLowerCase();
+                console.log(tempApi);
+                $("#cardDiv").empty();
+                
+                
+                $.get(tempApi, function(weatherDataBase){
+                     
+                     $("#cardDiv").append("<h1>Query returned " + weatherDataBase.length + " records</h1>");
+                     var data = weatherDataBase;
+                     
+                     //console.log(data);
+                     var cloneCard = $(".temp").clone();
+                     var z = 0;
+                     $.each(data, function(i,v){
+                         console.log(v);
+                         if(z == 0){
+                            cloneCard.find(".wCity").text("City: " + v.name);
+                            cloneCard.find(".wCountry").text("Country: " + v.country);
+                            cloneCard.find(".wCounty").text("County: " + v.region);
+                         }
+                         if(z == 1){
+                            cloneCard.find(".weatherTemp").text("Temperature: " + v.temp_f);
+                            cloneCard.removeClass("temp");
+                            $("#cardDiv").append(cloneCard);
+                        
+                            return false;
+                         }
+                         z++;
+                        
+                        
+                     });
+                     
+                        
+                     
+                    
+                });
+                
+
+            });
+
             $("#dataSearch").on("click", function() {
                  var value = $("#findItem").val().trim();
-                 var movieName = value.replace(/\s+/g, '');
                  var temp = dataBaseApi;
-                 temp = temp + movieName.toLowerCase() + apiKey;
+                 temp = temp + value.toLowerCase() + apiKey;
                  console.log(temp);
                  $("#cards").empty();
                  $.get(temp, function(dataBase){
@@ -187,9 +229,10 @@
                      $.each(data.results, function(i,v){
                          var cloneCard = $(".template").clone();
                          cloneCard.find(".movieName").text("Movie Name: " + v.display_title);
-                         cloneCard.find(".criticName").text("Critic: " + v.service_request_number);
+                         cloneCard.find(".criticName").text("Critic: " + v.byline);
                          cloneCard.find(".rated").text("Rated: " + v.mpaa_rating);
-                         cloneCard.find(".headine").text("Title of Article: " + v.headline);
+                         cloneCard.find(".cPick").text("Critics Pick: " + v.critics_pick);
+                         cloneCard.find(".headline").text("Headline: " + v.headline);
                          cloneCard.find(".pubDate").text("Publication Date: " + v.publication_date);
                          cloneCard.find(".summary").text("Critic's Review: " + v.summary_short);
                 
