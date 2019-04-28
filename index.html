@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
       
     <script src="https://unpkg.com/dexie@latest/dist/dexie.js"></script>
@@ -20,7 +20,7 @@
   </head>
   <body>
      <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="#home">Navbar</a>
+      <a class="navbar-brand" href="#home">Movie Review Site</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -35,6 +35,9 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#reviews">Movie Reviews</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#indexStuff">History</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#weather">Weather</a>
@@ -134,13 +137,16 @@
       <div id="cardDiv"></div>
       <div class="card temp" style="width: 18rem;">
 		  <div class="card-body">
-			  <h4 class="wCity">N/A</h4>
-			  <h5 class="wCountry">N/A</h5>
-        <h6 class="wCounty">N/A</h6>
-        <h6 class="weatherTemp">N/A</h6>
+			  <h4 class="wCity"></h4>
+			  <h5 class="wCountry"></h5>
+        <h6 class="wCounty"></h6>
+        <h6 class="weatherTemp"></h6>
         
 		  </div>
 	</div>
+    </div>
+    <div class="stuff" id="indexStuff">
+
     </div>
     <div class="stuff" id="about">
         <h1>About</h1>
@@ -154,12 +160,19 @@
         <p>This App was ....</p>
     </div>
     <script>
-        
+            db = new Dexie("notes_database");
+      
+      // loop through notes
+            db.version(1).stores({
+               notes: "++id, subject"
+            });
         $(document).ready(function() {
            var dataBaseApi = "https://api.nytimes.com/svc/movies/v2/reviews/search.json?query=";
            var apiKey = "&api-key=4Z439pwbTIyV7T6SmCWTvmQc0PvyrArK";
            var weatherApi = "https://api.apixu.com/v1/current.json?key=f0a402bca6fa443a893234220192704&q=";
            
+           
+
            hide();
            $("#home").show();
             
@@ -174,6 +187,25 @@
           
             });
 
+          function loadNotesList() {
+          // clear contents
+              $("#indexStuff").empty();
+          // loop through notes
+               db.notes.each(function(note) {
+            
+                  var p = $("<p>");
+                  p.attr("data-id", note.id);
+                  p.addClass("list-note");
+                  p.text(note.subject);
+            
+                  $("#indexStuff").append(p);
+             });
+          }
+
+
+
+
+
             $("#weatherSearch").on("click", function(){
                 var tempWeatherKey = $("#findWeather").val().trim();
                 var tempApi = weatherApi  + tempWeatherKey.toLowerCase();
@@ -183,7 +215,7 @@
                 
                 $.get(tempApi, function(weatherDataBase){
                      
-                     $("#cardDiv").append("<h1>Query returned " + weatherDataBase.length + " records</h1>");
+                     
                      var data = weatherDataBase;
                      
                      //console.log(data);
@@ -221,6 +253,9 @@
                  var temp = dataBaseApi;
                  temp = temp + value.toLowerCase() + apiKey;
                  console.log(temp);
+                 
+                 db.notes.put({subject: value, date: new Date()});
+                 loadNotesList();
                  $("#cards").empty();
                  $.get(temp, function(dataBase){
                      $("#cards").append("<h1>Query returned " + dataBase.results.length + " records</h1>");
